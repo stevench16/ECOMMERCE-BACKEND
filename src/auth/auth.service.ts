@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import {compare} from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 
 
@@ -13,7 +14,9 @@ import {compare} from 'bcrypt';
 @Injectable()
 export class AuthService {
 
-    constructor(@InjectRepository(User) private userRepository: Repository<User>) { }
+    constructor(@InjectRepository(User) private userRepository: Repository<User>,
+      private jwtServices: JwtService
+    ) { }
     async register(user: RegisterAuthDto) {
 
         const emailExist = await this.userRepository.findOneBy({ email: user.email })
@@ -54,6 +57,14 @@ export class AuthService {
 
         }
 
-        return userFound;
+        const payload ={id : userFound.id, name : userFound.name};
+        const token=this.jwtServices.sign(payload);
+
+        const data={
+            user: userFound,
+            token:token
+        }
+
+        return data;
     }
 }
