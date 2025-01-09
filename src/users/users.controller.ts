@@ -39,7 +39,7 @@ export class UsersController {
         new ParseFilePipe({
             validators: [
                 new MaxFileSizeValidator({ maxSize: 1024*1024*10 }),
-                new FileTypeValidator({ fileType: '.(png|jpeg|)' }),
+                new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
             ],
         }),
     ) file: Express.Multer.File) {
