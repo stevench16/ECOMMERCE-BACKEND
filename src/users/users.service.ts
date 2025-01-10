@@ -4,8 +4,9 @@ import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import storage =require( '../utils/cloud_storage');
 
-
+@Injectable()
 export class UsersService {
     constructor(
         @InjectRepository(User) private userRepository: Repository <User>
@@ -35,7 +36,8 @@ export class UsersService {
                 
     }
 
-    async updateWithImage(image: Express.Multer.File){
-        
+    async updateWithImage(file: Express.Multer.File){
+        const url = await storage(file, file.originalname);
+        console.log ('URL : '+ url);
     }
 }
