@@ -33,20 +33,20 @@ export class UsersController {
     }
 
 
-    @Post('upload')
+    @Post('upload/:id')
     @UseInterceptors(FileInterceptor('file'))
-    uploadFile(@UploadedFile(
+    updateWithImage(@UploadedFile(
         new ParseFilePipe({
             validators: [
-                new MaxFileSizeValidator({ maxSize: 1024*1024*10 }),
+                new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }),
                 new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
             ],
         }),
-    ) file: Express.Multer.File) {
-        console.log(file);
-        this.UsersService.updateWithImage(file);
+    ) file: Express.Multer.File,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() user: UpdateUserDto
+    ) {
+
+        return this.UsersService.updateWithImage(file, id, user);
     }
-
-
-
 }
