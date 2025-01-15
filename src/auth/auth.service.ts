@@ -2,20 +2,19 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { privateDecrypt } from 'crypto';
 import { User } from 'src/users/user.entity';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
-import {compare} from 'bcrypt';
+import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-
-
-
+import { Rol } from 'src/roles/rol.entity';
 
 @Injectable()
 export class AuthService {
 
     constructor(@InjectRepository(User) private userRepository: Repository<User>,
-      private jwtServices: JwtService
+        @InjectRepository(Rol) private rolesRepository: Repository<Rol>,
+        private jwtServices: JwtService
     ) { }
     async register(user: RegisterAuthDto) {
 
@@ -34,14 +33,17 @@ export class AuthService {
         }
 
         const newUser = this.userRepository.create(user);
+
+        const rolesIds = user.rolesIds;
+        const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
+        newUser.roles = roles;
+
         const userSaved = await this.userRepository.save(newUser);
-
-        const payload ={id : userSaved.id, name : userSaved.name};
-        const token=this.jwtServices.sign(payload);
-
-        const data={
+        const payload = { id: userSaved.id, name: userSaved.name };
+        const token = this.jwtServices.sign(payload);
+        const data = {
             user: userSaved,
-            token:'Bearer ' + token
+            token: 'Bearer ' + token
         }
 
         delete data.user.password;
@@ -63,20 +65,20 @@ export class AuthService {
         const isPasswordValid = await compare(password, userFound.password);
 
         if (!isPasswordValid) {
-            
+
             //403 FORBIDDEN Acces denied
             return new HttpException('La contraseña es incorrecta.', HttpStatus.FORBIDDEN)
 
         }
 
-        const payload ={id : userFound.id, name : userFound.name};
-        const token=this.jwtServices.sign(payload);
+        const payload = { id: userFound.id, name: userFound.name };
+        const token = this.jwtServices.sign(payload);
 
-        const data={
+        const data = {
             user: userFound,
-            token:'Bearer ' + token
+            token: 'Bearer ' + token
         }
-        
+
         delete data.user.password
 
         return data;

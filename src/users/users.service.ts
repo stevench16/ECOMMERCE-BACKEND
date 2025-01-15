@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import storage =require( '../utils/cloud_storage');
+import { Rol } from 'src/roles/rol.entity';
 
 @Injectable()
 export class UsersService {
