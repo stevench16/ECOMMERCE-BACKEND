@@ -17,7 +17,7 @@ export class UsersController {
 
     @UseGuards(JwtAuthGuard)
     @Get()// http://localhost/users
-    findAll(@Body() user: CreateUserDto) {
+    findAll() {
         return this.UsersService.findAll();
     }
 
@@ -32,7 +32,7 @@ export class UsersController {
         return this.UsersService.update(id, user);
     }
 
-
+    @UseGuards(JwtAuthGuard)
     @Post('upload/:id')
     @UseInterceptors(FileInterceptor('file'))
     updateWithImage(@UploadedFile(

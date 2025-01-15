@@ -19,7 +19,7 @@ export class UsersService {
     }
 
     findAll(){
-        return this.userRepository.find()
+        return this.userRepository.find({relations:['roles']});
     }
 
     async update(id:number, user:UpdateUserDto){

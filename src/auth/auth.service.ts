@@ -56,7 +56,10 @@ export class AuthService {
 
         const { email, password } = loginData;
 
-        const userFound = await this.userRepository.findOneBy({ email: email })
+        const userFound = await this.userRepository.findOne({
+            where:{email:email},
+            relations:['roles']
+        })
 
         if (!userFound) {
             return new HttpException('El correo electronico ingresado no existe.', HttpStatus.NOT_FOUND)
