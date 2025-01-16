@@ -38,8 +38,14 @@ export class AuthService {
         const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
         newUser.roles = roles;
 
+
         const userSaved = await this.userRepository.save(newUser);
-        const payload = { id: userSaved.id, name: userSaved.name };
+        const rolesString=userSaved.roles.map(rol => rol.id);
+        const payload = { 
+            id: userSaved.id, 
+            name: userSaved.name,
+            roles:rolesString
+         };
         const token = this.jwtServices.sign(payload);
         const data = {
             user: userSaved,
@@ -57,8 +63,8 @@ export class AuthService {
         const { email, password } = loginData;
 
         const userFound = await this.userRepository.findOne({
-            where:{email:email},
-            relations:['roles']
+            where: { email: email },
+            relations: ['roles']
         })
 
         if (!userFound) {
@@ -74,7 +80,14 @@ export class AuthService {
 
         }
 
-        const payload = { id: userFound.id, name: userFound.name };
+        const rolesIds = userFound.roles.map(rol => rol.id); // ['CLIENT','ADMIN']
+
+
+        const payload = {
+            id: userFound.id,
+            name: userFound.name,
+            roles: rolesIds
+        };
         const token = this.jwtServices.sign(payload);
 
         const data = {
