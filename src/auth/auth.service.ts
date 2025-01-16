@@ -22,30 +22,36 @@ export class AuthService {
 
         if (emailExist) {
             // 409 conflicto que puede ser solucionado por el usuario
-            return new HttpException('El email ingresado ya se encuentra registrado.', HttpStatus.CONFLICT);
+            throw new HttpException('El email ingresado ya se encuentra registrado.', HttpStatus.CONFLICT);
         }
 
         const phoneExist = await this.userRepository.findOneBy({ phone: user.phone })
 
         if (phoneExist) {
             // 409 conflicto que puede ser solucionado por el usuario
-            return new HttpException('El numero telefonico ingresado ya se encuentra registrado.', HttpStatus.CONFLICT);
+            throw new HttpException('El numero telefonico ingresado ya se encuentra registrado.', HttpStatus.CONFLICT);
         }
 
         const newUser = this.userRepository.create(user);
 
-        const rolesIds = user.rolesIds;
+        let rolesIds = [];
+        if (user.rolesIds !== undefined && user.rolesIds !== null) {
+            rolesIds = user.rolesIds;
+        } else {
+            rolesIds.push('CLIENT')
+
+        }
         const roles = await this.rolesRepository.findBy({ id: In(rolesIds) });
         newUser.roles = roles;
 
 
         const userSaved = await this.userRepository.save(newUser);
-        const rolesString=userSaved.roles.map(rol => rol.id);
-        const payload = { 
-            id: userSaved.id, 
+        const rolesString = userSaved.roles.map(rol => rol.id);
+        const payload = {
+            id: userSaved.id,
             name: userSaved.name,
-            roles:rolesString
-         };
+            roles: rolesString
+        };
         const token = this.jwtServices.sign(payload);
         const data = {
             user: userSaved,
@@ -68,7 +74,7 @@ export class AuthService {
         })
 
         if (!userFound) {
-            return new HttpException('El correo electronico ingresado no existe.', HttpStatus.NOT_FOUND)
+            throw new HttpException('El correo electronico ingresado no existe.', HttpStatus.NOT_FOUND)
         }
 
         const isPasswordValid = await compare(password, userFound.password);
@@ -76,7 +82,7 @@ export class AuthService {
         if (!isPasswordValid) {
 
             //403 FORBIDDEN Acces denied
-            return new HttpException('La contraseña es incorrecta.', HttpStatus.FORBIDDEN)
+            throw new HttpException('La contraseña es incorrecta.', HttpStatus.FORBIDDEN)
 
         }
 
