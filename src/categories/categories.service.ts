@@ -12,6 +12,10 @@ export class CategoriesService {
         @InjectRepository(Category) private categoriesRepository: Repository<Category>
     ) { }
 
+    findAll(){
+        return this.categoriesRepository.find()
+    }
+
     async create(file: Express.Multer.File, category: CreateCategoryDto) {
 
         
@@ -24,6 +28,6 @@ export class CategoriesService {
         category.image = url
         const newCategory = this.categoriesRepository.create(category)
         return this.categoriesRepository.save(newCategory)
-        
+
     }
 }
