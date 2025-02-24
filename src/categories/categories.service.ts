@@ -60,4 +60,17 @@ export class CategoriesService {
         return this.categoriesRepository.save(updatedCategory)
 
     }
+
+    async delete (id:number){
+        const categoryFound = await this.categoriesRepository.findOneBy({id:id});
+
+        if(!categoryFound){
+            throw new HttpException('La Categoría No Existe.', HttpStatus.NOT_FOUND);
+        }
+
+        return this.categoriesRepository.delete(id);
+
+    }
+
+
 }
