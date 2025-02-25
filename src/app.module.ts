@@ -6,13 +6,14 @@ import { Entity } from 'typeorm';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
+import { CategoriesModule } from './categories/categories.module';
 
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: 'localhost',
+      host: '172.27.44.131',
       port: 3306,
       username: 'root',
       password: 'Kubernetes2024*',
@@ -23,7 +24,8 @@ import { RolesModule } from './roles/roles.module';
 
     UsersModule,
     AuthModule,
-    RolesModule
+    RolesModule,
+    CategoriesModule
   ],
   controllers: [AppController],
   providers: [AppService],
