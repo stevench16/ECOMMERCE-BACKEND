@@ -22,7 +22,6 @@ export class Category{
     @Column({type: 'datetime', default: () => 'CURRENT_TIMESTAMP'})
     update_at:string;
 
-    @JoinTable({joinColumn: {name: 'id_category'}})
     @OneToMany(() => Product, product => product.id)
     product: Product
 
