@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { UpdateProductDto } from './dto/uptadate-product.dto';
+import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './product.entity';
 import { Repository } from 'typeorm';
@@ -37,19 +37,12 @@ export class ProductsService {
                     }
                 }
 
-                if (!savedProduct.id) {
-                    throw new HttpException("No se pudo obtener el ID del producto", HttpStatus.INTERNAL_SERVER_ERROR);
-                }
-
                 await this.update(savedProduct.id, savedProduct);
                 uploadedFiles = uploadedFiles + 1;
-
-                if (uploadedFiles === files.length){
-                    return savedProduct;
-                }
             })
         }
-        startForEach();
+        await startForEach();
+        return savedProduct;
 
     }
 
@@ -66,5 +59,45 @@ export class ProductsService {
         return this.productsRepository.save(updatedProduct);
     }
 
+    async delete (id:number, product: UpdateProductDto){
+        const productFound = await this.productsRepository.findOneBy({ id: id });
+        if (!productFound) { 
+            throw new HttpException("Producto no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return this.productsRepository.delete(id);
+    }
 
+    async updateWithImage(files: Array<Express.Multer.File>, id: number, product: UpdateProductDto) {
+
+        if (files.length === 0) {
+            throw new HttpException("Las imagenes son obligatorias", HttpStatus.NOT_FOUND);
+        }
+
+        let counter = 0;
+        let uploadedFiles = Number(product.images_to_update[counter]); //Cuenta cuantos archivos se han subido a Firebase
+
+        const updateProduct = await this.update(id, product);
+
+        const startForEach = async () => {
+            await async_foreach(files, async (file: Express.Multer.File) => {
+                const url = await storage(file, file.originalname);
+
+                if (url !== undefined && url !== null) {
+                    if(uploadedFiles == 0){
+                        updateProduct.image1 = url
+                    }
+                    else if(uploadedFiles == 1){
+                        updateProduct.image2 = url
+                    }
+                }
+
+                await this.update(updateProduct.id, updateProduct);
+                counter++;
+                uploadedFiles = Number(product.images_to_update[counter]);
+            })
+        }
+        await startForEach();
+        return updateProduct;
+
+    }
 }
