@@ -12,6 +12,19 @@ export class ProductsService {
 
     constructor(@InjectRepository(Product) private productsRepository: Repository<Product>){}
 
+    findAll() {
+        return this.productsRepository.find();
+    }
+
+    findByCategory(id_category: number) {
+        return this.productsRepository.find({
+            where: {
+                category: { id: id_category } // ✅ Forma correcta de filtrar por clave foránea
+            },
+            relations: ['category'] // ✅ Opcional: si quieres cargar la relación completa
+        });
+    }
+
     async create(files: Array<Express.Multer.File>, product: CreateProductDto) {
 
         if (files.length === 0) {

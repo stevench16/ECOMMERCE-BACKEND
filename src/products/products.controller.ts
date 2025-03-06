@@ -14,23 +14,38 @@ export class ProductsController {
 
     constructor(private productsService: ProductsService) {}
 
-        @HasRoles(JwtRole.ADMIN)
-        @UseGuards(JwtAuthGuard, JwtRolesGuard)
-        @Post() // http:172.27.44.141:3000/categories-> post
-        @UseInterceptors(FilesInterceptor('files[]', 2))
-        Create(
-            @UploadedFiles(
-                new ParseFilePipe({
-                    validators: [
-                        new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }),
-                        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-                    ],
-                }),
-            ) files: Array<Express.Multer.File>,
-            @Body() product: CreateProductDto
-        ) {    
-            return this.productsService.create(files, product);
-        }
+    @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Get() // Obtener por id
+    findAll(
+    ) {    
+        return this.productsService.findAll();
+    }
+
+    @HasRoles(JwtRole.ADMIN, JwtRole.CLIENT)
+    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Get('category/:id_category') // Obtener por id
+    findByCategory(@Param('id_category', ParseIntPipe)id_category: number) {    
+        return this.productsService.findByCategory(id_category);
+    }
+
+    @HasRoles(JwtRole.ADMIN)
+    @UseGuards(JwtAuthGuard, JwtRolesGuard)
+    @Post() // http:172.27.44.141:3000/categories-> post
+    @UseInterceptors(FilesInterceptor('files[]', 2))
+    Create(
+        @UploadedFiles(
+            new ParseFilePipe({
+                validators: [
+                    new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 10 }),
+                    new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+                ],
+            }),
+        ) files: Array<Express.Multer.File>,
+        @Body() product: CreateProductDto
+    ) {    
+        return this.productsService.create(files, product);
+    }
 
     @HasRoles(JwtRole.ADMIN)
     @UseGuards(JwtAuthGuard, JwtRolesGuard)
