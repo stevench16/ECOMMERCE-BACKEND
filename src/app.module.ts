@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { CategoriesModule } from './categories/categories.module';
+import { AddressModule } from './address/address.module';
 
 
 @Module({
@@ -25,7 +26,8 @@ import { CategoriesModule } from './categories/categories.module';
     UsersModule,
     AuthModule,
     RolesModule,
-    CategoriesModule
+    CategoriesModule,
+    AddressModule
   ],
   controllers: [AppController],
   providers: [AppService],
