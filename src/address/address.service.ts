@@ -32,4 +32,13 @@ export class AddressService {
         const updateAddress = Object.assign(addressFound, address);
         return this.addressRepository.save(updateAddress);
     }
+
+    async delete(id: number) {
+
+        const addressFound = await this.addressRepository.findOneBy({ id: id });
+        if (!addressFound) {
+            throw new HttpException('Dirección No Encontrada.!', HttpStatus.NOT_FOUND);
+        }
+        return this.addressRepository.delete(id);
+    }
 }
