@@ -7,6 +7,7 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { RolesModule } from './roles/roles.module';
 import { CategoriesModule } from './categories/categories.module';
+import { AddressModule } from './address/address.module';
 import { ProductsModule } from './products/products.module';
 
 
@@ -14,7 +15,7 @@ import { ProductsModule } from './products/products.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '172.27.44.141',
+      host: '172.27.44.131',
       port: 3306,
       username: 'root',
       password: 'Kubernetes2024*',
@@ -27,6 +28,7 @@ import { ProductsModule } from './products/products.module';
     AuthModule,
     RolesModule,
     CategoriesModule,
+    AddressModule,
     ProductsModule
   ],
   controllers: [AppController],
