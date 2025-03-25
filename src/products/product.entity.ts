@@ -18,6 +18,9 @@ export class Product {
     
     @Column({ nullable: true})
     image2: string;
+
+    @Column({ nullable: true})
+    id_category: number;
     
     @Column()
     price: number;
